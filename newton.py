@@ -8,7 +8,7 @@ size = width, height = 640, 480
 size = width, height = 1920, 1080 #640, 480
 
 diagional = sqrt(width**2 + height**2)
-max_speed = 10
+max_speed = 20 # int(10 * width/640)
 mass = 1
 acceleration_time = 1 # second
 acceleration_distance = diagional/2.
@@ -26,12 +26,20 @@ green = (50, 255, 50)
 
 screen = pygame.display.set_mode(size)
 
-#ball = pygame.image.load("intro_ball.gif")
-#ballrect = ball.get_rect()
-#ballrect = pygame.draw.circle(screen, red, [0,0], 20)
-#ball = pygame.Surface(ballrect)
+class ring_buffer(list):
+    def __init__(self,N):
+        self.N = N
+    def push(self, value):
+        self.insert(0, value)
+        if len(self) > self.N:
+            self.pop()
+
+tail = ring_buffer(100)
+
 ball_diameter = 10
 ballrect = pygame.Rect(0, 0, ball_diameter, ball_diameter)
+tail.push(ballrect.center)
+
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
@@ -50,14 +58,25 @@ while 1:
         # sx =  sx / magnitude
         # sy =  sy / magnitude
         speed = [sx, sy]
-    ballrect = ballrect.move(speed)
-    if ballrect.left < 0 or ballrect.right > width:
-        speed[0] = -speed[0]
-    if ballrect.top < 0 or ballrect.bottom > height:
-        speed[1] = -speed[1]
+        # if ballrect.left < 0:
+        #     speed[0] = 1
+        # elif ballrect.right > width:
+        #     speed[0] = -1
+        # if ballrect.top < 0:
+        #     speed[1] = -1
+        #     or ballrect.bottom > height:
+        #     speed = [0,0]
+        #     #speed[1] = -0.8 * speed[1]
+
+        ballrect = ballrect.move(speed)
+        tail.push(ballrect.center)
+
+
 
     screen.fill(black)
     #screen.blit(ball, ballrect)
     pygame.draw.circle(screen, red, ballrect.center, int(ball_diameter/2.0))
+    for i in range(len(tail)-1):
+        pygame.draw.line(screen, red, tail[i], tail[i+1], 1)
     pygame.display.flip()
     clock.tick(fps)
