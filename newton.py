@@ -5,6 +5,7 @@ from math import sqrt
 pygame.init()
 clock = pygame.time.Clock()
 size = width, height = 640, 480
+size = width, height = 1920, 1080 #640, 480
 
 diagional = sqrt(width**2 + height**2)
 max_speed = 10
@@ -19,12 +20,18 @@ tic = 1/fps
 
 speed = [0,0]
 black = 0, 0, 0
+white = (255, 255, 255)
+red = (255, 50, 50)
+green = (50, 255, 50)
 
 screen = pygame.display.set_mode(size)
 
-ball = pygame.image.load("intro_ball.gif")
-ballrect = ball.get_rect()
-
+#ball = pygame.image.load("intro_ball.gif")
+#ballrect = ball.get_rect()
+#ballrect = pygame.draw.circle(screen, red, [0,0], 20)
+#ball = pygame.Surface(ballrect)
+ball_diameter = 10
+ballrect = pygame.Rect(0, 0, ball_diameter, ball_diameter)
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
@@ -50,6 +57,7 @@ while 1:
         speed[1] = -speed[1]
 
     screen.fill(black)
-    screen.blit(ball, ballrect)
+    #screen.blit(ball, ballrect)
+    pygame.draw.circle(screen, red, ballrect.center, int(ball_diameter/2.0))
     pygame.display.flip()
     clock.tick(fps)
